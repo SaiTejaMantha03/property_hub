@@ -16,8 +16,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Check if we're in production
-if os.environ.get('RENDER'):
+# Check if we're in production (Render sets this automatically)
+if os.environ.get('RENDER') or os.environ.get('DATABASE_URL'):
     from .production_settings import *
 else:
     # Development settings continue below

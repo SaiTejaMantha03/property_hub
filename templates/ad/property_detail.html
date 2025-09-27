@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ property.title }} - Property Hub{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Property Images -->
+    <div class="row mb-4">
+        <div class="col-12">
+            {% if property.images.all %}
+            <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in property.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ image.image.url }}" class="d-block w-100 property-hero-image" alt="{{ image.caption }}">
+                        {% if image.caption %}
+                        <div class="carousel-caption d-none d-md-block">
+                            <p>{{ image.caption }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if property.images.all|length > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                <i class="fas fa-home fa-5x text-muted"></i>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Property Details -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="h2">{{ property.title }}</h1>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                {{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <h2 class="text-primary">${{ property.price|floatformat:0 }}</h2>
+                            <span class="badge bg-{% if property.listing_type == 'sale' %}success{% else %}info{% endif %} fs-6">
+                                {% if property.listing_type == 'sale' %}For Sale{% else %}For Rent{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Property Features -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 col-6 text-center">
+                            <div class="feature-item">
+                                <i class="fas fa-bed fa-2x text-primary mb-2"></i>
+                                <h5>{{ property.bedrooms }}</h5>
+                                <small class="text-muted">Bedrooms</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 text-center">
+                            <div class="feature-item">
+                                <i class="fas fa-bath fa-2x text-primary mb-2"></i>
+                                <h5>{{ property.bathrooms }}</h5>
+                                <small class="text-muted">Bathrooms</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 text-center">
+                            <div class="feature-item">
+                                <i class="fas fa-ruler-combined fa-2x text-primary mb-2"></i>
+                                <h5>{{ property.area_sqft }}</h5>
+                                <small class="text-muted">Sq Ft</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 text-center">
+                            <div class="feature-item">
+                                <i class="fas fa-home fa-2x text-primary mb-2"></i>
+                                <h5>{{ property.get_property_type_display }}</h5>
+                                <small class="text-muted">Type</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <h4>Description</h4>
+                        <p>{{ property.description|linebreaks }}</p>
+                    </div>
+                    
+                    <!-- Location Map (placeholder) -->
+                    {% if property.latitude and property.longitude %}
+                    <div class="mb-4">
+                        <h4>Location</h4>
+                        <div class="bg-light p-4 rounded text-center">
+                            <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Map integration would go here</p>
+                            <p><strong>Coordinates:</strong> {{ property.latitude }}, {{ property.longitude }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-user-circle fa-4x text-primary mb-3"></i>
+                        <h5>{{ property.contact_name }}</h5>
+                    </div>
+                    
+                    <div class="contact-item mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-phone text-primary me-3"></i>
+                            <div>
+                                <strong>Phone</strong>
+                                <br>
+                                <a href="tel:{{ property.contact_phone }}" class="text-decoration-none">
+                                    {{ property.contact_phone }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-envelope text-primary me-3"></i>
+                            <div>
+                                <strong>Email</strong>
+                                <br>
+                                <a href="mailto:{{ property.contact_email }}" class="text-decoration-none">
+                                    {{ property.contact_email }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="tel:{{ property.contact_phone }}" class="btn btn-primary">
+                            <i class="fas fa-phone me-2"></i>Call Now
+                        </a>
+                        <a href="mailto:{{ property.contact_email }}" class="btn btn-outline-primary">
+                            <i class="fas fa-envelope me-2"></i>Send Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Property Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Property Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Type:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ property.get_property_type_display }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Listing:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ property.get_listing_type_display }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Area:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ property.area_sqft }} sq ft
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Listed:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ property.created_at|date:"M d, Y" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Properties -->
+    {% if related_properties %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">Similar Properties</h3>
+            <div class="row">
+                {% for related_property in related_properties %}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card property-card h-100 shadow-sm">
+                        {% if related_property.images.all %}
+                            <img src="{{ related_property.images.first.image.url }}" class="card-img-top property-image-sm" alt="{{ related_property.title }}">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-home fa-2x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title">{{ related_property.title|truncatechars:30 }}</h6>
+                            <p class="text-primary fw-bold">${{ related_property.price|floatformat:0 }}</p>
+                            <p class="text-muted small">{{ related_property.city }}, {{ related_property.state }}</p>
+                            <a href="{% url 'property_detail' related_property.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

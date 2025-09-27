@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Find Your Dream Property</h1>
+                <p class="lead mb-4">Discover the perfect home, apartment, or commercial space with our comprehensive property listings.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'property_list' %}?listing_type=sale" class="btn btn-light btn-lg">
+                        <i class="fas fa-home me-2"></i>Buy Property
+                    </a>
+                    <a href="{% url 'property_list' %}?listing_type=rent" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-key me-2"></i>Rent Property
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-search-card bg-white p-4 rounded shadow">
+                    <h4 class="text-dark mb-3">Quick Property Search</h4>
+                    <form action="{% url 'property_list' %}" method="get">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <select name="property_type" class="form-select">
+                                    <option value="">Property Type</option>
+                                    <option value="apartment">Apartment</option>
+                                    <option value="house">House</option>
+                                    <option value="condo">Condominium</option>
+                                    <option value="villa">Villa</option>
+                                    <option value="land">Land</option>
+                                    <option value="commercial">Commercial</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select name="listing_type" class="form-select">
+                                    <option value="">Buy or Rent</option>
+                                    <option value="sale">For Sale</option>
+                                    <option value="rent">For Rent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" name="city" class="form-control" placeholder="City">
+                            </div>
+                            <div class="col-md-6">
+                                <select name="bedrooms" class="form-select">
+                                    <option value="">Bedrooms</option>
+                                    <option value="1">1+</option>
+                                    <option value="2">2+</option>
+                                    <option value="3">3+</option>
+                                    <option value="4">4+</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-2"></i>Search Properties
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Properties -->
+{% if featured_properties %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Featured Properties</h2>
+            <p class="lead text-muted">Handpicked premium properties just for you</p>
+        </div>
+        <div class="row">
+            {% for property in featured_properties %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card property-card h-100 shadow-sm">
+                    {% if property.images.all %}
+                        <img src="{{ property.images.first.image.url }}" class="card-img-top property-image" alt="{{ property.title }}">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                            <i class="fas fa-home fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">{{ property.title }}</h5>
+                            <span class="badge bg-primary">${{ property.price|floatformat:0 }}</span>
+                        </div>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ property.address }}, {{ property.city }}, {{ property.state }}
+                        </p>
+                        <div class="property-details mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-bed me-1"></i>{{ property.bedrooms }} beds
+                                <i class="fas fa-bath ms-3 me-1"></i>{{ property.bathrooms }} baths
+                                <i class="fas fa-ruler-combined ms-3 me-1"></i>{{ property.area_sqft }} sqft
+                            </small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-phone me-1"></i>{{ property.contact_phone }}
+                            </small>
+                            <a href="{% url 'property_detail' property.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'property_list' %}" class="btn btn-outline-primary btn-lg">View All Properties</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Recent Properties -->
+{% if recent_properties %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Recent Listings</h2>
+            <p class="lead text-muted">Latest properties added to our database</p>
+        </div>
+        <div class="row">
+            {% for property in recent_properties %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card property-card h-100 shadow-sm">
+                    {% if property.images.all %}
+                        <img src="{{ property.images.first.image.url }}" class="card-img-top property-image-sm" alt="{{ property.title }}">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-home fa-2x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ property.title|truncatechars:30 }}</h6>
+                        <p class="text-muted small mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ property.city }}, {{ property.state }}
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-primary">${{ property.price|floatformat:0 }}</span>
+                            <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-4 mb-4">
+                <div class="feature-box">
+                    <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                    <h4>Easy Search</h4>
+                    <p class="text-muted">Find properties quickly with our advanced search filters</p>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="feature-box">
+                    <i class="fas fa-map-marked-alt fa-3x text-primary mb-3"></i>
+                    <h4>Location Details</h4>
+                    <p class="text-muted">Get detailed location information and nearby amenities</p>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="feature-box">
+                    <i class="fas fa-phone fa-3x text-primary mb-3"></i>
+                    <h4>Direct Contact</h4>
+                    <p class="text-muted">Connect directly with property owners and agents</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

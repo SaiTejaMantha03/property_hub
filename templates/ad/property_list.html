@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Properties - Property Hub{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <div class="mb-3">
+                            <label class="form-label">Property Type</label>
+                            <select name="property_type" class="form-select">
+                                <option value="">All Types</option>
+                                <option value="apartment" {% if current_filters.property_type == 'apartment' %}selected{% endif %}>Apartment</option>
+                                <option value="house" {% if current_filters.property_type == 'house' %}selected{% endif %}>House</option>
+                                <option value="condo" {% if current_filters.property_type == 'condo' %}selected{% endif %}>Condominium</option>
+                                <option value="villa" {% if current_filters.property_type == 'villa' %}selected{% endif %}>Villa</option>
+                                <option value="land" {% if current_filters.property_type == 'land' %}selected{% endif %}>Land</option>
+                                <option value="commercial" {% if current_filters.property_type == 'commercial' %}selected{% endif %}>Commercial</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Listing Type</label>
+                            <select name="listing_type" class="form-select">
+                                <option value="">All Listings</option>
+                                <option value="sale" {% if current_filters.listing_type == 'sale' %}selected{% endif %}>For Sale</option>
+                                <option value="rent" {% if current_filters.listing_type == 'rent' %}selected{% endif %}>For Rent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">City</label>
+                            <select name="city" class="form-select">
+                                <option value="">All Cities</option>
+                                {% for city in cities %}
+                                <option value="{{ city }}" {% if current_filters.city == city %}selected{% endif %}>{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Price Range</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ current_filters.min_price }}">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ current_filters.max_price }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Bedrooms</label>
+                            <select name="bedrooms" class="form-select">
+                                <option value="">Any</option>
+                                <option value="1" {% if current_filters.bedrooms == '1' %}selected{% endif %}>1+</option>
+                                <option value="2" {% if current_filters.bedrooms == '2' %}selected{% endif %}>2+</option>
+                                <option value="3" {% if current_filters.bedrooms == '3' %}selected{% endif %}>3+</option>
+                                <option value="4" {% if current_filters.bedrooms == '4' %}selected{% endif %}>4+</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 mb-2">Apply Filters</button>
+                        <a href="{% url 'property_list' %}" class="btn btn-outline-secondary w-100">Clear Filters</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Properties Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Properties <small class="text-muted">({{ page_obj.paginator.count }} found)</small></h2>
+            </div>
+            
+            {% if page_obj %}
+            <div class="row">
+                {% for property in page_obj %}
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="card property-card h-100 shadow-sm">
+                        {% if property.images.all %}
+                            <img src="{{ property.images.first.image.url }}" class="card-img-top property-image" alt="{{ property.title }}">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                                <i class="fas fa-home fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title">{{ property.title|truncatechars:25 }}</h5>
+                                <span class="badge bg-{% if property.listing_type == 'sale' %}success{% else %}info{% endif %}">
+                                    {% if property.listing_type == 'sale' %}For Sale{% else %}For Rent{% endif %}
+                                </span>
+                            </div>
+                            
+                            <p class="text-primary fw-bold fs-5 mb-2">${{ property.price|floatformat:0 }}</p>
+                            
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ property.city }}, {{ property.state }}
+                            </p>
+                            
+                            <div class="property-details mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-bed me-1"></i>{{ property.bedrooms }}
+                                    <i class="fas fa-bath ms-2 me-1"></i>{{ property.bathrooms }}
+                                    <i class="fas fa-ruler-combined ms-2 me-1"></i>{{ property.area_sqft }} sqft
+                                </small>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-phone me-1"></i>{{ property.contact_phone }}
+                                </small>
+                                <a href="{% url 'property_detail' property.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Properties pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-home fa-4x text-muted mb-3"></i>
+                <h3>No Properties Found</h3>
+                <p class="text-muted">Try adjusting your search filters or <a href="{% url 'property_list' %}">view all properties</a>.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

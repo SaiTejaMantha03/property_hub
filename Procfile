@@ -1,1 +1,0 @@
-web: gunicorn advertisement.wsgi:application --bind 0.0.0.0:$PORTweb: gunicorn advertisement.wsgi:application --bind 0.0.0.0:$PORT

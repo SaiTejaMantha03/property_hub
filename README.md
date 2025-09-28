@@ -103,6 +103,40 @@ DATABASE_URL=postgresql://... (Render will provide this)
 2. **Copy the DATABASE_URL** from your PostgreSQL service
 3. **Add DATABASE_URL** to your web service environment variables
 
+## Deployment Troubleshooting
+
+### Common Issues and Solutions
+
+1. **"web:: command not found" Error**
+   - This occurs when there's a conflict between Procfile and render.yaml
+   - Solution: Use only render.yaml for configuration, remove Procfile
+   - Ensure startCommand in render.yaml is: `gunicorn advertisement.wsgi:application --bind 0.0.0.0:$PORT`
+
+2. **ALLOWED_HOSTS Error**
+   - Django requires proper host configuration in production
+   - The production_settings.py automatically configures RENDER_EXTERNAL_HOSTNAME
+   - Ensure DJANGO_SETTINGS_MODULE is set to advertisement.production_settings
+
+3. **Static Files Not Loading**
+   - Make sure WhiteNoise is in MIDDLEWARE
+   - Run `python manage.py collectstatic` in build.sh
+   - Check STATIC_ROOT and STATICFILES_STORAGE settings
+
+4. **Database Connection Issues**
+   - Verify DATABASE_URL environment variable is set
+   - Check that psycopg2-binary is in requirements.txt
+   - Ensure PostgreSQL service is running in Render
+
+### Environment Variables Required for Render
+
+```
+RENDER=true
+DJANGO_SETTINGS_MODULE=advertisement.production_settings
+DEBUG=false
+DATABASE_URL=(your PostgreSQL URL)
+SECRET_KEY=(generate a secure key)
+```
+
 ## Project Structure
 
 ```

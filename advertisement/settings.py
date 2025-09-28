@@ -16,8 +16,16 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Check if we're in production (Render sets this automatically)
-if os.environ.get('RENDER') or os.environ.get('DATABASE_URL'):
+# Check if we're in production environment
+# Render sets RENDER=true, but also check for other production indicators
+is_production = (
+    os.environ.get('RENDER') == 'true' or 
+    os.environ.get('RENDER_SERVICE_ID') or 
+    os.environ.get('DATABASE_URL') or
+    'render.com' in os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')
+)
+
+if is_production:
     from .production_settings import *
 else:
     # Development settings continue below

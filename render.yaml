@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: property-hub
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn advertisement.wsgi:application"
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.4
+      - key: RENDER
+        value: true
